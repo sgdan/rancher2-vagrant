@@ -1,0 +1,5 @@
+.vagrant
+output*
+*.exe
+*.box
+.cache

@@ -1,0 +1,30 @@
+{
+    "builders": [
+        {
+            "type": "virtualbox-ovf",
+            "headless": true,
+            "guest_additions_mode": "disable",
+            "source_path": ".cache/box.ovf",
+            "ssh_username": "vagrant",
+            "ssh_password": "vagrant",
+            "ssh_wait_timeout": "90s",
+            "shutdown_command": "sudo poweroff"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "execute_command": "sh {{.Path}}",
+            "scripts": [
+                "pack.sh"
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "keep_input_artifact": true,
+            "output": "rancher2.box"
+        }
+    ]
+}
