@@ -1,13 +1,50 @@
 {
     "builders": [
         {
-            "type": "virtualbox-ovf",
-            "headless": true,
+            "type": "virtualbox-iso",
+            "guest_os_type": "Linux26_64",
             "guest_additions_mode": "disable",
-            "source_path": ".cache/box.ovf",
-            "ssh_username": "vagrant",
+            "headless": true,
+            "http_directory": ".",
+            "vboxmanage": [
+                [
+                    "modifyvm",
+                    "{{.Name}}",
+                    "--memory",
+                    "2048"
+                ],
+                [
+                    "modifyvm",
+                    "{{.Name}}",
+                    "--cpus",
+                    "4"
+                ]
+            ],
+            "disk_size": "40960",
+            "hard_drive_interface": "sata",
+            "iso_url": "http://mirror.aarnet.edu.au/pub/alpine/v3.8/releases/x86_64/alpine-virt-3.8.0-x86_64.iso",
+            "iso_checksum": "c0daab130ff32399bfce8893d7f6c591078ce8f87e82a2b987f8832fa6cf2d76",
+            "iso_checksum_type": "sha256",
+            "ssh_username": "root",
             "ssh_password": "vagrant",
-            "ssh_wait_timeout": "90s",
+            "ssh_wait_timeout": "10m",
+            "boot_wait": "15s",
+            "boot_command": [
+                "root<enter><wait>",
+                "ifconfig eth0 up && udhcpc -i eth0<enter><wait5>",
+                "wget -q http://{{.HTTPIP}}:{{.HTTPPort}}/answers<enter><wait>",
+                "setup-alpine -f $PWD/answers<enter><wait5>",
+                "vagrant<enter>",
+                "vagrant<enter>",
+                "<wait10><wait10><wait10>",
+                "y<enter>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "<wait10><wait10><wait10>",
+                "mount /dev/sda2 /mnt<enter>",
+                "sed -i -E 's,#?(PermitRootLogin\\s+).+,\\1yes,' /mnt/etc/ssh/sshd_config<enter>",
+                "reboot<enter>"
+            ],
             "shutdown_command": "sudo poweroff"
         }
     ],
@@ -23,7 +60,6 @@
     "post-processors": [
         {
             "type": "vagrant",
-            "keep_input_artifact": true,
             "output": "rancher2.box"
         }
     ]

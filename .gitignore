@@ -3,3 +3,7 @@ output*
 *.exe
 *.box
 .cache
+packer_cache
+test
+*.tgz
+*.gz
